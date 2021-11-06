@@ -6,6 +6,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 const contractorRoutes = require('./routes/contractors')
+const materialRoutes = require('./routes/materials')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -25,6 +26,7 @@ app.use((req, res, next)=>{
 })
 
 app.use('/contractors', contractorRoutes)
+app.use('/materials', materialRoutes)
 
 app.use((req, res, next)=>{
   const error = new Error('Not found')
