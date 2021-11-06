@@ -12,7 +12,7 @@ const {
 
 router.get('/', getContractors)
 router.post('/', addContractor)
-router.route('/:id')
+router.route('/:contractorId')
         .get(getContractorById)
         .put(updateContractor)
         .delete(deleteContractor)

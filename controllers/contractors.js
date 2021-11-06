@@ -4,9 +4,9 @@ const regex = /\S+@\S+\.\S/
 
 const getContractors = (req, res) => {
   try {
-    const contractors = `SELECT * FROM contractors ORDER BY contractorId ASC`
+    const getContractorsQuery = `SELECT * FROM contractors ORDER BY contractorId ASC`
     
-    pool.query(contractors, (err, results) => {
+    pool.query(getContractorsQuery, (err, results) => {
       if(err){
         return res.status(400).json({
           message: err.message
@@ -26,10 +26,25 @@ const getContractors = (req, res) => {
 
 const getContractorById = async(req, res) => {
   try {
-    const contractorId = parseInt(req.params.id)
-    const contractor = `SELECT * FROM contractors WHERE contractorId = $1`
-    const contractorValue = [contractorId]
-    const result = await pool.query(contractor, contractorValue)
+    const contractorId = parseInt(req.params.contractorId)
+    const getContractorQuery = `SELECT * FROM contractors WHERE contractorId = $1`
+    const getContractorQueryValue = [contractorId]
+    const result = await pool.query(getContractorQuery, getContractorQueryValue)
+    return res.status(400).json({
+      data: result.rows
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getContractor = async(res, option, value) => {
+  try {
+    const contractorQuery = `SELECT * FROM contractors WHERE ${option} = $1`
+    const contractorQueryValue = [value]
+    const result = await pool.query(contractorQuery, contractorQueryValue)
     return {
       data: result.rows
     }
@@ -43,10 +58,10 @@ const getContractorById = async(req, res) => {
 const addContractor = async(req, res) => {
   try {
     const { firstName, lastName, email, age, gender, role } = req.body
-    const isEmail = await getSingleContractor(res, 'email', email)
-    const newContractor = `INSERT INTO contractors (firstName, lastName, email, age, gender, role, createdOn)
+    const isEmail = await getContractor(res, 'email', email)
+    const addContractorQuery = `INSERT INTO contractors (firstName, lastName, email, age, gender, role, createdOn)
                             VALUES($1, $2, $3, $4, $5, $6, NOW()) RETURNING *`
-    const newContractorValues = [firstName, lastName, email, age, gender, role]
+    const addContractorQueryValues = [firstName, lastName, email, age, gender, role]
 
     if(!firstName || !email || !role){
       return res.status(400).json({
@@ -65,7 +80,7 @@ const addContractor = async(req, res) => {
         message: 'Please enter a valid email'
       })
     }else {
-      const results = await pool.query(newContractor, newContractorValues)
+      const results = await pool.query(addContractorQuery, addContractorQueryValues)
 
       return res.status(201).json({
         message: 'Contractor created successfuly.',
@@ -81,10 +96,10 @@ const addContractor = async(req, res) => {
 
 const updateContractor = async(req, res) => {
   try {
-    const contractorId = parseInt(req.params.id)
+    const contractorId = parseInt(req.params.contractorId)
     const { firstName, lastName, email, age, gender, role } = req.body
-    const contractor = `UPDATE contractors SET firstName = $1, lastName = $2, email = s$3, age = $4, gender =$5, role = $6 WHERE contractorId = $7`
-    const contractorValues = [firstName, lastName, email, age, gender, role, contractorId]
+    const updateContractorQuery = `UPDATE contractors SET firstName = $1, lastName = $2, email = $3, age = $4, gender =$5, role = $6 WHERE contractorId = $7`
+    const updateContractorQueryValues = [firstName, lastName, email, age, gender, role, contractorId]
 
     if (age &&  typeof age !==  'number'){
       return res.status(400).json({
@@ -95,7 +110,7 @@ const updateContractor = async(req, res) => {
         message: 'Please enter a valid email'
       })
     }else {
-      const results = await pool.query(contractor, contractorValues)
+      const results = await pool.query(updateContractorQuery, updateContractorQueryValues)
 
       return res.status(201).json({
         message: 'Contractor updated successfuly.',
@@ -111,15 +126,14 @@ const updateContractor = async(req, res) => {
 
 const deleteContractor = async(req, res) => {
   try {
-  const contractorId = parseInt(request.params.id)
-  const deleteQuery = `DELETE FROM contractors WHERE contractorId = $1`
-  const deleteValue = [contractorId]
+  const contractorId = parseInt(req.params.contractorId)
+  const deleteContractorQuery = `DELETE FROM contractors WHERE contractorId = $1`
+  const deleteContractorValue = [contractorId]
   
-  const result = pool.query(deleteQuery, deleteValue)
+  const result = pool.query(deleteContractorQuery, deleteContractorValue)
 
   return res.status(201).json({
-    message: 'Contractor deleted successfuly.',
-    data: result.rows[0]
+    message: 'Contractor deleted successfuly.'
   })
     
   } catch (err) {
