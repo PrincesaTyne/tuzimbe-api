@@ -57,19 +57,23 @@ const getContractor = async(res, option, value) => {
 
 const addContractor = async(req, res) => {
   try {
-    const { firstName, lastName, email, age, gender, role } = req.body
+    const { firstName, lastName, email, age, gender, roleId } = req.body
     const isEmail = await getContractor(res, 'email', email)
-    const addContractorQuery = `INSERT INTO contractors (firstName, lastName, email, age, gender, role, createdOn)
+    const addContractorQuery = `INSERT INTO contractors (firstName, lastName, email, age, gender, roleId, createdOn)
                             VALUES($1, $2, $3, $4, $5, $6, NOW()) RETURNING *`
-    const addContractorQueryValues = [firstName, lastName, email, age, gender, role]
+    const addContractorQueryValues = [firstName, lastName, email, age, gender, roleId]
 
-    if(!firstName || !email || !role){
+    if(!firstName || !email || !roleId){
       return res.status(400).json({
-        message: 'FirstName, Email and Role are required'
+        message: 'FirstName, Email and RoleId are required'
     })
     }else if (age &&  typeof age !==  'number'){
       return res.status(400).json({
         message: 'Age should be a number'
+      })
+    }else if (roleId &&  typeof roleId !==  'number'){
+      return res.status(400).json({
+        message: 'RoleId should be a number'
       })
     }else  if (email && isEmail.data.length){
       return res.status(400).json({
@@ -97,13 +101,17 @@ const addContractor = async(req, res) => {
 const updateContractor = async(req, res) => {
   try {
     const contractorId = parseInt(req.params.contractorId)
-    const { firstName, lastName, email, age, gender, role } = req.body
-    const updateContractorQuery = `UPDATE contractors SET firstName = $1, lastName = $2, email = $3, age = $4, gender =$5, role = $6 WHERE contractorId = $7`
-    const updateContractorQueryValues = [firstName, lastName, email, age, gender, role, contractorId]
+    const { firstName, lastName, email, age, gender, roleId } = req.body
+    const updateContractorQuery = `UPDATE contractors SET firstName = $1, lastName = $2, email = $3, age = $4, gender =$5, roleId = $6 WHERE contractorId = $7`
+    const updateContractorQueryValues = [firstName, lastName, email, age, gender, roleId, contractorId]
 
     if (age &&  typeof age !==  'number'){
       return res.status(400).json({
         message: 'Age should be a number'
+      })
+    }else if (roleId &&  typeof roleId !==  'number'){
+      return res.status(400).json({
+        message: 'RoleId should be a number'
       })
     }else if (regex.test(email) === false){
       return res.status(400).json({
