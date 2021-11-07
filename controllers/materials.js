@@ -116,9 +116,15 @@ const updateMaterial = async(req, res) => {
       })
     }
   } catch (err) {
-    return res.status(400).json({
-      message: err.message
-    })
+    if (err.message.includes('duplicate key value violates unique constraint')){
+      return res.status(400).json({
+        message: 'MaterialName already exists'
+      })
+    }else {
+      return res.status(400).json({
+        message: err.message
+      })
+    }
   }
 }
 
