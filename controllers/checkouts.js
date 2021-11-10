@@ -135,12 +135,243 @@ const deleteCheckout = async(req, res) => {
   
 }
 
+const getMonthlyCosts = (req, res) => {
+  try {
+    const getMonthlyCostsQuery = `SELECT SUM(checkouts.quantity * materials.price) as monthlyCost FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('month', checkouts.createdOn)::DATE = date_trunc('month', CURRENT_DATE)`
+    
+    pool.query(getMonthlyCostsQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getWeeklyCosts = (req, res) => {
+  try {
+    const getWeeklyCostsQuery = `SELECT SUM(checkouts.quantity * materials.price) as weeklyCost FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('week', checkouts.createdOn)::DATE = date_trunc('week', CURRENT_DATE)`
+    
+    pool.query(getWeeklyCostsQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getDailyCosts = (req, res) => {
+  try {
+    const getDailyCostsQuery = `SELECT SUM(checkouts.quantity * materials.price) as dailyCost FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE checkouts.createdOn::DATE = CURRENT_DATE`
+    
+    pool.query(getDailyCostsQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getDailyDetailedCosts = (req, res) => {
+  try {
+    const getDailyDetailedCostsQuery = `SELECT materials.materialName, SUM(checkouts.quantity * materials.price) as dailyDetailedCost FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('day', checkouts.createdOn)::DATE = date_trunc('day', CURRENT_DATE)
+                                GROUP BY materials.materialName`
+    
+    pool.query(getDailyDetailedCostsQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getWeeklyDetailedCosts = (req, res) => {
+  try {
+    const getWeeklyDetailedCostsQuery = `SELECT materials.materialName, SUM(checkouts.quantity * materials.price) as weeklyDetailedCost FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('week', checkouts.createdOn)::DATE = date_trunc('week', CURRENT_DATE)
+                                GROUP BY materials.materialName`
+    
+    pool.query(getWeeklyDetailedCostsQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getMonthlyDetailedCosts = (req, res) => {
+  try {
+    const getMonthlyDetailedCostsQuery = `SELECT materials.materialName, SUM(checkouts.quantity * materials.price) as monthlyDetailedCost FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('month', checkouts.createdOn)::DATE = date_trunc('month', CURRENT_DATE)
+                                GROUP BY materials.materialName`
+    
+    pool.query(getMonthlyDetailedCostsQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getDailyDetailedUsage = (req, res) => {
+  try {
+    const getDailyDetailedUsageQuery = `SELECT materials.materialName, SUM(checkouts.quantity) FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('day', checkouts.createdOn)::DATE = date_trunc('day', CURRENT_DATE)
+                                GROUP BY materials.materialName`
+    
+    pool.query(getDailyDetailedUsageQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getWeeklyDetailedUsage = (req, res) => {
+  try {
+    const getWeeklyDetailedUsageQuery = `SELECT materials.materialName, SUM(checkouts.quantity) FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('week', checkouts.createdOn)::DATE = date_trunc('week', CURRENT_DATE)
+                                GROUP BY materials.materialName`
+    
+    pool.query(getWeeklyDetailedUsageQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
+const getMonthlyDetailedUsage = (req, res) => {
+  try {
+    const getMonthlyDetailedUsageQuery = `SELECT materials.materialName, SUM(checkouts.quantity) FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE date_trunc('month', checkouts.createdOn)::DATE = date_trunc('month', CURRENT_DATE)
+                                GROUP BY materials.materialName`
+    
+    pool.query(getMonthlyDetailedUsageQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
 const checkout = {
   getCheckouts,
   getCheckoutById,
   addCheckout,
   updateCheckout,
-  deleteCheckout
+  deleteCheckout,
+  getDailyCosts,
+  getWeeklyCosts,
+  getMonthlyCosts,
+  getDailyDetailedCosts,
+  getWeeklyDetailedCosts,
+  getMonthlyDetailedCosts,
+  getDailyDetailedUsage,
+  getWeeklyDetailedUsage,
+  getMonthlyDetailedUsage
 }
 
 module.exports = checkout

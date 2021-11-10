@@ -182,6 +182,30 @@ const deleteAttendance = async(req, res) => {
   
 }
 
+const getDailyCosts = (req, res) => {
+  try {
+    const getDailyCostsQuery = `SELECT SUM(contractors.quantity * materials.price) as dailyCost FROM checkouts 
+                                INNER JOIN materials ON materials.materialId = checkouts.materialId
+                                WHERE checkouts.createdOn::DATE = CURRENT_DATE`
+    
+    pool.query(getDailyCostsQuery, (err, results) => {
+      if(err){
+        return res.status(400).json({
+          message: err.message
+        })
+      }
+
+      return res.status(200).json({
+        data: results.rows
+      })
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+}
+
 const attendance = {
   getAttendances,
   getAttendanceById,
