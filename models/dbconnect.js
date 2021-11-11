@@ -44,7 +44,7 @@ const createTables = async() =>{
       arrivalTime TIMESTAMP NOT NULL,
       departureTime TIMESTAMP,
       contractorId INT NOT NULL,
-      FOREIGN KEY (contractorId)REFERENCES contractors(contractorId) ON DELETE CASCADE
+      CONSTRAINT fk_contractor FOREIGN KEY (contractorId)REFERENCES contractors(contractorId) ON DELETE CASCADE
     )`
 
     const checkoutsTable = `CREATE TABLE IF NOT EXISTS checkouts (
@@ -53,8 +53,8 @@ const createTables = async() =>{
       quantity INT NOT NULL,
       contractorId INT,
       createdOn TIMESTAMP NOT NULL,
-      FOREIGN KEY (materialId) REFERENCES materials(materialId) ON DELETE CASCADE,
-      FOREIGN KEY (contractorId) REFERENCES contractors(contractorId) ON DELETE SET NULL
+      CONSTRAINT fk_material FOREIGN KEY (materialId) REFERENCES materials(materialId) ON DELETE CASCADE,
+      CONSTRAINT fk_contractor FOREIGN KEY (contractorId) REFERENCES contractors(contractorId) ON DELETE SET NULL
     )`
     
     await pool.query(rolesTable)

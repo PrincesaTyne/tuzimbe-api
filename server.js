@@ -3,12 +3,13 @@ const express = require('express')
 const bodyParser = require('body-parser')
 
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3030
 
 const contractorRoutes = require('./routes/contractors')
 const materialRoutes = require('./routes/materials')
 const attendanceRoutes = require('./routes/attendances')
 const roleRoutes = require('./routes/roles')
+const checkoutRoutes = require('./routes/checkouts')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -31,6 +32,7 @@ app.use('/contractors', contractorRoutes)
 app.use('/materials', materialRoutes)
 app.use('/attendances', attendanceRoutes)
 app.use('/roles', roleRoutes)
+app.use('/checkouts', checkoutRoutes)
 
 app.use((req, res, next)=>{
   const error = new Error('Not found')
